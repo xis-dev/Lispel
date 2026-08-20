@@ -1,0 +1,129 @@
+; Unpack List for Function
+(fn {unpack {f l} {
+	eval (join (list f) l)
+    }
+})
+
+; Pack list for Function
+(fn {pack {f & xs} {f xs}})
+
+; Curried and Uncurried calling
+(def {curry} unpack)
+(def {uncurry} pack)
+
+(fn {let {b} {
+    (( \ {_} b) ())
+}})
+
+(fn {not {x} {! x}})
+(fn {and {x y} {&& x y}})
+
+(fn {flip {f a b} {f b a}})
+(fn {ghost {& xs} {eval xs}})
+(fn {comp {f g x} {f (g x)}})
+
+
+(fn {fst {l} { eval (head l) }})
+(fn {snd {l} { eval (head (tail l)) }})
+(fn {trd {l} { eval (head (tail (tail l))) }})
+
+; List length
+(fn {len {l} {
+    if (== l nil) {0}
+    else {+ 1 (len (tail l))}
+}})
+ 
+; Nth item in list
+(fn {nth {n l} {
+    if (== n 0) {fst l}
+    else {nth (- n 1) (tail l)}
+}})
+
+; Last item in list
+(fn {last {l} {
+    nth (- (len l) 1) l
+}})
+
+(fn {do {& l} {
+    if (== l nil) {nil}
+    else {last l}
+}})
+
+; Take n items
+(fn {take {n l} {
+    if (== n 0) {nil}
+    else {join (head l) (take (- n 1) (tail l))}
+}})
+
+; Drop n items
+(fn {drop {n l} {
+    if (== n 0) {l}
+    else {drop (- n 1) (tail l)}
+}})
+
+; Split at n
+(fn {split {n l} { list (take n l) (drop n l)}})
+
+; Element of a list
+(fn {elem {x l} {
+    if (== l nil) {false}
+    else {
+	if (== x (fst l)) {true} 
+	else {elem x (tail l)}
+    }
+}})
+
+; Apply function on each element of list
+(fn {map {f l} {
+    if (== l nil) {nil}
+    else {join (list (f (fst l))) (map f (tail l))}
+}})
+
+; Apply filter to list, returning elements that match some condition
+(fn {filter {f l} {
+    if (== l nil) {nil}
+    else {join (if (f (fst l)) {head l} {nil}) (filter f (tail l))}
+}})
+
+; Fold left, merging each value with the initial using the function
+(fn {foldl {f z l} {
+    if (== l nil) {z}
+    else {foldl f (f z (fst l)) (tail l)}
+}})
+
+; Addition and multiplication by folding left
+(fn {sum {l} { foldl + 0 l}})
+(fn {product {l} {foldl * 1 l}})
+
+; Select if a condition is true going down
+(fn {select {& cs} {
+    if (== cs nil) {error "No selection Found"}
+    else {
+	if (fst (fst cs)) {snd (fst cs)}
+	else {unpack select (tail cs)}
+    }
+}})
+
+; Always true condition, usually to be used in with select
+(def {otherwise} true)
+
+(fn {case {x & cs} {
+    if (== cs nil) {error "No Case Found"}
+    else {
+	if (== x (fst (fst cs))) {snd (fst cs)}
+	else {unpack case (join (list x) (tail cs))}
+	}
+    }
+})
+
+; Fibonacci
+(fn {fib {n} {
+    select 
+	{ (== n 0) 0}
+	{ (== n 1) 1}
+	{ otherwise (+ (fib (- n 1)) (fib (- n 2))) }
+    }
+})
+
+
+    
