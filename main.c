@@ -328,6 +328,8 @@ int main(int argc, char* argv[]) {
     if (x->type == LVAL_EXIT) {
 	lval_del(x);
 	free(input);
+
+	printf("Lispel exited at %zu:%zu. \n", reader.r, reader.c);
 	break;
     }
 
@@ -875,7 +877,7 @@ void lval_del(lval* v) {
 	break;
 
 	case LVAL_RETURN:
-		free(v->val.ret);
+		lval_del(v->val.ret);
 		break;
     }
 
@@ -1108,7 +1110,7 @@ void lval_print(lenv* e, lval* v) {
     switch(v->type) {
 	case LVAL_NUM: printf("%li", v->val.num); break;
 	case LVAL_ERR: printf("Error: %s", v->val.err); break;
-	case LVAL_EXIT: printf("%s", v->val.exit); break;
+	case LVAL_EXIT: printf("Exit: %s", v->val.exit); break;
 	case LVAL_SYM: printf("%s", v->val.sym); break;
 	case LVAL_STR: lval_print_str(v); break;
 	case LVAL_COND: lval_print_cond(v->val.cond); break;
@@ -1602,10 +1604,10 @@ lval* builtin_exit(lenv* e, lval* a) {
 //	lval_del(lval_pop(a, 0));
   //  }
     // Ensure we didnt come across an error
-    if (a->type != LVAL_ERR) {
-	lval_del(a);
-	LEXIT(a);
-    }
+    if (a->type == LVAL_ERR) lval_println(e, a);
+
+    LEXIT(a);
+
     return a;
 }
 

@@ -37,7 +37,8 @@
 // or env holds some temporary reader that gets pos from ast parser
 // would need to know when eval is completely finished though
 #define LEXIT(args) \
-    lval* exit = lval_exit("Prompt exited at row: '%i' & column: '%i'", \
+    lval* exit = lval_exit("Prompt exited successfully", \
 	    0, 0); \
+    lval_del(args); \
 	return exit; 
 
