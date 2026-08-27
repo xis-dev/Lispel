@@ -1,3 +1,6 @@
+#ifndef LISPEL_H
+#define LISPEL_H 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -238,3 +241,5 @@ lval* lval_join(lval* x, lval* y);
 lval* lval_join_str(lval* x, lval* y);
 
 char* lenv_get_builtin_name(lenv* e, lbuiltin f);
+
+#endif
